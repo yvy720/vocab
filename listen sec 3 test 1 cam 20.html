@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambridge IELTS 20: Loneliness Vocabulary Dictation Trainer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .custom-shadow {
+            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.05), 0 10px 10px -5px rgba(99, 102, 241, 0.03);
+        }
+        .glow-correct {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+        }
+        .glow-incorrect {
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2.5">
+                <div class="bg-white text-indigo-700 p-2 rounded-lg shadow-md">
+                    <i class="fa-solid fa-headphones-simple text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-md sm:text-lg font-extrabold tracking-tight">IELTS 20 Loneliness Dictation</h1>
+                    <p class="text-[10px] sm:text-xs text-indigo-200">Luyện nghe viết siêu phản xạ Section 3</p>
+                </div>
+            </div>
+            <!-- Dynamic Active Statistics -->
+            <div class="text-xs sm:text-sm font-bold bg-indigo-800/60 px-3.5 py-1.5 rounded-full border border-indigo-500/20">
+                ⚡ Tiến trình: <span id="header-progress" class="text-emerald-400">0</span>/<span id="header-total">34</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-3xl w-full mx-auto px-4 py-8 flex flex-col justify-center">
+
+        <!-- 1. WELCOME SCREEN -->
+        <div id="welcome-screen" class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl text-center space-y-6">
+            <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-4xl shadow-sm">
+                <i class="fa-solid fa-bolt text-amber-500 animate-pulse text-3xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-extrabold text-slate-800">The Increase in Loneliness</h2>
+                <p class="text-sm text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
+                    Chào mừng bạn đến với hệ thống trắc nghiệm siêu phản xạ Cambridge IELTS 20. Khi gõ sai ứng dụng sẽ kêu <span class="text-rose-500 font-bold">"Tẹt Tẹt"</span> và hiện đáp án ngay, sau đó sẽ tự động phát âm cả từ vựng lẫn câu ví dụ trước khi bạn qua câu mới!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span class="block text-2xl font-extrabold text-indigo-700">34</span>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Từ vựng chuẩn</span>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span class="block text-2xl font-extrabold text-indigo-700">4</span>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Chủ đề phân nhóm</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2.5 max-w-sm mx-auto pt-3">
+                <button onclick="startSession('standard')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl shadow-lg hover:shadow-indigo-500/20 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i> Bắt đầu học Tiêu Chuẩn
+                </button>
+                <button onclick="startSession('dictation')" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-keyboard"></i> Bắt đầu chế độ Dictation (Ẩn Gợi Ý)
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. GAME / WIZARD SCREEN -->
+        <div id="quiz-screen" class="hidden space-y-6">
+            <!-- Progress Line Indicator -->
+            <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-1">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-indigo-500"></i> Chủ đề: <strong id="active-category" class="text-slate-700">N/A</strong></span>
+                <span>Từ thứ <span id="current-index" class="text-indigo-600 font-extrabold">1</span>/<span id="total-questions">34</span></span>
+            </div>
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner">
+                <div id="quiz-progress-bar" class="bg-indigo-600 h-2 transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Main Wizard Interactive Card -->
+            <div id="wizard-card" class="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 custom-shadow transition-all duration-300 relative">
+                
+                <!-- Dictation Mode Badge -->
+                <div id="dictation-badge" class="hidden absolute top-4 right-4 bg-rose-50 text-rose-600 border border-rose-100 text-[9px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span> DICTATION MODE
+                </div>
+
+                <!-- Learning Cues Audio Hub -->
+                <div class="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <span class="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest block mb-1">Hệ thống âm thanh</span>
+                        <h4 class="text-xs font-bold text-slate-600 leading-tight">Từ vựng & Ví dụ sẽ tự động phát âm ngay khi bạn trả lời xong.</h4>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="playActiveWord()" class="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-volume-high text-indigo-500"></i> Nghe từ
+                        </button>
+                        <button onclick="playActiveSentence()" class="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-comment-dots text-indigo-500"></i> Nghe ví dụ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question Prompt Details -->
+                <div class="mt-6 space-y-4">
+                    <!-- Vietnamese meaning -->
+                    <div id="meaning-prompt-box">
+                        <span class="text-xs font-bold text-slate-400 block uppercase tracking-wider">Nghĩa tiếng Việt:</span>
+                        <p id="active-meaning" class="text-lg font-extrabold text-slate-800 mt-1 capitalize">N/A</p>
+                    </div>
+
+                    <!-- Interactive Gap Fill Sentence -->
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Điền vào câu ví dụ:</span>
+                            <span id="active-ipa" class="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-100">/ipa/</span>
+                        </div>
+                        <p id="active-sentence" class="text-md sm:text-lg font-bold text-slate-800 leading-relaxed mt-2.5 bg-slate-50/40 p-4 rounded-xl border border-dashed border-slate-200">
+                            Loading sentence...
+                        </p>
+                    </div>
+
+                    <!-- Sentence Vietnamese Translation -->
+                    <div id="translation-prompt-box">
+                        <span class="text-xs font-bold text-slate-400 block uppercase tracking-wider mb-1">Dịch nghĩa câu ví dụ:</span>
+                        <p id="active-translation" class="text-xs text-slate-500 font-semibold italic pl-3 border-l-2 border-indigo-400 leading-relaxed">
+                            Loading translation...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Input Submission Panel -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <label for="answer-input" class="text-xs font-bold text-slate-400 block uppercase tracking-wider">Gõ từ tiếng Anh vào đây:</label>
+                    <div class="flex gap-2.5 mt-2">
+                        <input 
+                            type="text" 
+                            id="answer-input" 
+                            class="flex-grow px-4 py-3.5 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl outline-none text-base font-extrabold text-indigo-900 transition-all placeholder:font-semibold placeholder:text-slate-300"
+                            placeholder="Nhập câu trả lời của bạn..."
+                            autocomplete="off"
+                            autofocus
+                        />
+                        <button id="submit-btn" onclick="submitCheck()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3.5 rounded-2xl transition shadow-md flex items-center justify-center gap-2">
+                            Xác nhận <i class="fa-solid fa-circle-arrow-right"></i>
+                        </button>
+                        <!-- Next Button (Hidden until checked and audio completes) -->
+                        <button id="next-btn" onclick="nextCard()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                            Kế tiếp <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <p id="audio-wait-msg" class="text-[10px] text-amber-600 font-bold mt-1.5 hidden animate-pulse">
+                        <i class="fa-solid fa-spinner animate-spin"></i> Đang đọc từ vựng và câu ví dụ, vui lòng đợi đọc xong để qua câu mới...
+                    </p>
+                </div>
+
+                <!-- Dynamic Instant Feedback Section -->
+                <div id="feedback-box" class="hidden mt-6 p-4 rounded-2xl border transition-all duration-300 flex items-start gap-3">
+                    <div id="feedback-icon" class="text-2xl mt-0.5"></div>
+                    <div class="flex-grow space-y-1">
+                        <h4 id="feedback-title" class="font-extrabold text-sm">Tiêu đề</h4>
+                        <p id="feedback-desc" class="text-xs leading-relaxed font-semibold">Nội dung</p>
+                        <div id="feedback-alternatives" class="text-xs pt-1.5 border-t border-slate-200/50 hidden"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 3. FINISH / RESULT SCREEN -->
+        <div id="result-screen" class="hidden bg-white p-8 rounded-3xl border border-slate-100 shadow-xl space-y-6 text-center">
+            <div class="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner">
+                <i class="fa-solid fa-square-poll-vertical text-indigo-600 text-3xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-extrabold text-slate-800">Hoàn thành bài học!</h2>
+                <p class="text-sm text-slate-500 mt-1">Hệ thống đã ghi lại toàn bộ tiến trình của bạn.</p>
+            </div>
+
+            <!-- Score Stats Board -->
+            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto pt-2">
+                <div class="p-3 bg-emerald-50/50 rounded-2xl border border-emerald-100/50">
+                    <span class="block text-2xl font-extrabold text-emerald-600" id="stat-correct">0</span>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Làm đúng</span>
+                </div>
+                <div class="p-3 bg-rose-50/50 rounded-2xl border border-rose-100/50">
+                    <span class="block text-2xl font-extrabold text-rose-500" id="stat-wrong">0</span>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Chưa đúng</span>
+                </div>
+                <div class="p-3 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
+                    <span class="block text-2xl font-extrabold text-indigo-600" id="stat-accuracy">0%</span>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Độ chính xác</span>
+                </div>
+            </div>
+
+            <!-- Action buttons panel -->
+            <div class="flex flex-col gap-2 max-w-xs mx-auto pt-4">
+                <button id="retry-mistakes-btn" onclick="reviewWrongCardsOnly()" class="hidden bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 rounded-2xl shadow-lg hover:shadow-amber-500/25 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt animate-bounce"></i> Chỉ luyện lại các câu sai
+                </button>
+                <button onclick="restartAllSession()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl shadow-lg hover:shadow-indigo-500/20 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Ôn tập lại từ đầu (Tất cả)
+                </button>
+                <button onclick="exitToWelcome()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl transition text-xs">
+                    Quay về màn hình chính
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Web Audio API Buzz Synthesizer (No external file needed) -->
+    <script>
+        // Web Audio Context Synthesizer for instant Ding and Buzz sounds
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtxInstance = null;
+
+        function initAudio() {
+            if (!audioCtxInstance) audioCtxInstance = new AudioCtx();
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtxInstance) return;
+                
+                const osc = audioCtxInstance.createOscillator();
+                const gain = audioCtxInstance.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtxInstance.destination);
+
+                if (type === 'correct') {
+                    // Ding Ding high pitch cheerful sound
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, audioCtxInstance.currentTime); // D5
+                    osc.frequency.setValueAtTime(880, audioCtxInstance.currentTime + 0.1); // A5
+                    gain.gain.setValueAtTime(0.2, audioCtxInstance.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtxInstance.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtxInstance.currentTime + 0.3);
+                } else if (type === 'incorrect') {
+                    // Tẹt Tẹt harsh low buzzer sound
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(130, audioCtxInstance.currentTime); // C3
+                    osc.frequency.setValueAtTime(110, audioCtxInstance.currentTime + 0.08); // A2
+                    gain.gain.setValueAtTime(0.3, audioCtxInstance.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtxInstance.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtxInstance.currentTime + 0.35);
+                }
+            } catch (e) {
+                console.log("Audio synthesis context failed to load:", e);
+            }
+        }
+    </script>
+
+    <!-- Interactive JS Core Engine -->
+    <script>
+        const vocabularyData = [
+            // 1. Các loại bệnh và Vấn đề sức khỏe
+            { id: 1, word: "cardiovascular disease", answers: ["cardiovascular disease", "cardiovascular diseases"], meaning: "Bệnh tim mạch", ipa: "/ˌkɑːdiəʊˈvæskjʊlə dɪˈziːz/", sentence: "Regular exercise and a healthy diet can significantly reduce the risk of ___.", fullSentence: "Regular exercise and a healthy diet can significantly reduce the risk of cardiovascular disease.", translation: "Tập thể dục thường xuyên và chế độ ăn uống lành mạnh có thể làm giảm đáng kể nguy cơ mắc bệnh tim mạch.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 2, word: "dementia", answers: ["dementia"], meaning: "Chứng mất trí", ipa: "/dɪˈmɛnʃə/", sentence: "Loneliness and lack of social interaction in older adults has been linked to a higher incidence of ___.", fullSentence: "Loneliness and lack of social interaction in older adults has been linked to a higher incidence of dementia.", translation: "Sự cô đơn và thiếu tương tác xã hội ở người cao tuổi có mối liên hệ mật thiết với tỷ lệ mắc chứng mất trí nhớ cao hơn.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 3, word: "depression", answers: ["depression"], meaning: "Bệnh trầm cảm", ipa: "/dɪˈprɛʃən/", sentence: "Chronic isolation often leads to severe psychological issues such as clinical ___.", fullSentence: "Chronic isolation often leads to severe psychological issues such as clinical depression.", translation: "Tình trạng bị cô lập kinh niên thường dẫn đến các vấn đề tâm lý nghiêm trọng như bệnh trầm cảm lâm sàng.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 4, word: "diagnosis", answers: ["diagnosis", "diagnoses"], meaning: "Sự chẩn đoán", ipa: "/ˌdaɪəɡˈnəʊsɪs/", sentence: "An accurate ___ of mental health conditions requires specialized therapeutic observation.", fullSentence: "An accurate diagnosis of mental health conditions requires specialized therapeutic observation.", translation: "Việc chẩn đoán chính xác các tình trạng sức khỏe tâm thần đòi hỏi sự quan sát trị liệu chuyên biệt.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 5, word: "health risk", answers: ["health risk", "health risks"], meaning: "Rủi ro sức khỏe", ipa: "/ˈhɛlθ rɪsk/", sentence: "Prolonged feelings of loneliness are now considered as a major ___ comparable to smoking.", fullSentence: "Prolonged feelings of loneliness are now considered as a major health risk comparable to smoking.", translation: "Cảm giác cô đơn kéo dài hiện nay được coi là một rủi ro sức khỏe lớn có hại tương đương với việc hút thuốc lá.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 6, word: "immune system", answers: ["immune system", "immune systems"], meaning: "Hệ miễn dịch", ipa: "/ɪˈmjuːn ˈsɪstəm/", sentence: "Chronic stress and solitude can weaken the body's ___ and make us more susceptible to illness.", fullSentence: "Chronic stress and solitude can weaken the body's immune system and make us more susceptible to illness.", translation: "Căng thẳng kinh niên và sự cô độc có thể làm suy yếu hệ miễn dịch của cơ thể và khiến chúng ta dễ mắc bệnh hơn.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 7, word: "medical cure", answers: ["medical cure", "medical cures", "cure"], meaning: "Phương pháp chữa bệnh", ipa: "/ˈmɛdɪkl kjʊə/", sentence: "There is no simple ___ for modern loneliness; it requires genuine community intervention.", fullSentence: "There is no simple medical cure for modern loneliness; it requires genuine community intervention.", translation: "Không có phương pháp chữa bệnh y học đơn giản nào cho sự cô đơn hiện đại; nó đòi hỏi sự can thiệp thực sự của cộng đồng.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 8, word: "mental health", answers: ["mental health"], meaning: "Sức khỏe tinh thần", ipa: "/ˈmɛntl hɛlθ/", sentence: "High flats and urban isolation can negatively impact the ___ of daily commuters.", fullSentence: "High flats and urban isolation can negatively impact the mental health of daily commuters.", translation: "Các căn hộ tầng cao và sự cô lập ở đô thị có thể tác động tiêu cực đến sức khỏe tinh thần của những người di chuyển đi làm hàng ngày.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            { id: 9, word: "obesity", answers: ["obesity"], meaning: "Bệnh béo phì", ipa: "/əʊˈbiːsɪti/", sentence: "Physical inactivity and social withdrawal may contribute to lifestyle disorders such as ___.", fullSentence: "Physical inactivity and social withdrawal may contribute to lifestyle disorders such as obesity.", translation: "Sự ít vận động thể chất và việc khép kín xã hội có thể góp phần gây ra các rối loạn lối sống như bệnh béo phì.", category: "Bệnh tật & Vấn đề sức khỏe" },
+            // 2. Cảm xúc và Trạng thái
+            { id: 10, word: "a sense of belonging", answers: ["a sense of belonging", "sense of belonging"], meaning: "Cảm giác thuộc về", ipa: "/ə sɛns əv bɪˈlɒŋɪŋ/", sentence: "Being part of a local volunteer club gives individuals ___ within their community.", fullSentence: "Being part of a local volunteer club gives individuals a sense of belonging within their community.", translation: "Việc trở thành một phần của câu lạc bộ tình nguyện địa phương mang lại cho các cá nhân cảm giác thuộc về trong cộng đồng của họ.", category: "Cảm xúc & Trạng thái" },
+            { id: 11, word: "express frustration", answers: ["express frustration", "expressing frustration", "express frustrations"], meaning: "Bày tỏ sự thất vọng / bất bình", ipa: "/ɪkˈsprɛs frʌˈstreɪʃən/", sentence: "Many citizens ___ about the complete lack of public parks in urban planning.", fullSentence: "Many citizens express frustration about the complete lack of public parks in urban planning.", translation: "Nhiều người dân bày tỏ sự thất vọng về việc thiếu hoàn toàn các công viên công cộng trong quy hoạch đô thị.", category: "Cảm xúc & Trạng thái" },
+            { id: 12, word: "isolated", answers: ["isolated", "lonely"], meaning: "Bị cô lập, trơ trọi", ipa: "/ˈaɪsəleɪtɪd/", sentence: "Living alone in high-rise concrete apartments often makes elderly citizens feel deeply ___.", fullSentence: "Living alone in high-rise concrete apartments often makes elderly citizens feel deeply isolated.", translation: "Sống một mình trong các căn hộ bê tông cao tầng thường khiến những người lớn tuổi cảm thấy bị cô lập sâu sắc.", category: "Cảm xúc & Trạng thái" },
+            { id: 13, word: "loneliness", answers: ["loneliness"], meaning: "Sự cô đơn", ipa: "/ˈləʊnlinəs/", sentence: "The research report focuses on the dramatic increase in ___ among young professionals.", fullSentence: "The research report focuses on the dramatic increase in loneliness among young professionals.", translation: "Báo cáo nghiên cứu tập trung vào sự gia tăng chóng mặt của nỗi cô đơn trong số những chuyên gia trẻ tuổi.", category: "Cảm xúc & Trạng thái" },
+            { id: 14, word: "self-confidence", answers: ["self-confidence", "confidence"], meaning: "Sự tự tin", ipa: "/ˌsɛlf kənˈfɪdəns/", sentence: "Having supportive friends boosts a person's ___ when confronting life challenges.", fullSentence: "Having supportive friends boosts a person's self-confidence when confronting life challenges.", translation: "Có những người bạn luôn hỗ trợ sẽ giúp nâng cao sự tự tin của một người khi đối mặt với những thử thách trong cuộc sống.", category: "Cảm xúc & Trạng thái" },
+            { id: 15, word: "solitude", answers: ["solitude"], meaning: "Sự tĩnh lặng, sự cô độc", ipa: "/ˈsɒlɪtjuːd/", sentence: "While some creative artists enjoy temporary ___, prolonged isolation is highly destructive.", fullSentence: "While some creative artists enjoy temporary solitude, prolonged isolation is highly destructive.", translation: "Trong khi một số nghệ sĩ sáng tạo thích sự tĩnh lặng tạm thời, việc bị cô lập kéo dài lại mang tính hủy hoại rất lớn.", category: "Cảm xúc & Trạng thái" },
+            // 3. Đời sống xã hội và Con người
+            { id: 16, word: "extended family", answers: ["extended family", "extended families"], meaning: "Đại gia đình", ipa: "/ɪkˈstɛndɪd ˈfæmɪli/", sentence: "Unlike in the past, fewer young people nowadays live close to their ___ members.", fullSentence: "Unlike in the past, fewer young people nowadays live close to their extended family members.", translation: "Khác với ngày xưa, ngày nay ngày càng ít người trẻ sống gần các thành viên trong đại gia đình của họ.", category: "Đời sống xã hội & Con người" },
+            { id: 17, word: "high flat", answers: ["high flat", "high flats", "high rise flat", "high rise flats"], meaning: "Căn hộ tầng cao", ipa: "/haɪ flæt/", sentence: "Residents living in a ___ are less likely to interact with their immediate neighbors.", fullSentence: "Residents living in a high flat are less likely to interact with their immediate neighbors.", translation: "Cư dân sống trong một căn hộ tầng cao ít có khả năng tương tác với những người hàng xóm ngay cạnh của họ hơn.", category: "Đời sống xã hội & Con người" },
+            { id: 18, word: "lifespan", answers: ["lifespan", "lifespans"], meaning: "Tuổi thọ", ipa: "/ˈlaɪfspæn/", sentence: "Sociological data demonstrates that close social ties can dramatically extend our ___.", fullSentence: "Sociological data demonstrates that close social ties can dramatically extend our lifespan.", translation: "Dữ liệu xã hội học chứng minh rằng các mối liên kết xã hội chặt chẽ có thể kéo dài tuổi thọ của chúng ta một cách đáng kể.", category: "Đời sống xã hội & Con người" },
+            { id: 19, word: "mobile workforce", answers: ["mobile workforce", "flexible workforce"], meaning: "Lực lượng lao động linh động", ipa: "/ˈməʊbaɪl ˈwɜːkfɔːs/", sentence: "The rise of a highly ___ means individuals must continuously relocate to find work.", fullSentence: "The rise of a highly mobile workforce means individuals must continuously relocate to find work.", translation: "Sự trỗi dậy của một lực lượng lao động linh động đồng nghĩa với việc các cá nhân phải liên tục di dời chỗ ở để tìm kiếm việc làm.", category: "Đời sống xã hội & Con người" },
+            { id: 20, word: "modern lifestyle", answers: ["modern lifestyle", "modern lifestyles"], meaning: "Lối sống hiện đại", ipa: "/ˈmɒdən ˈlaɪfstɑɪl/", sentence: "The fast-paced ___ encourages autonomy but can lead to unintentional social isolation.", fullSentence: "The fast-paced modern lifestyle encourages autonomy but can lead to unintentional social isolation.", translation: "Lối sống hiện đại với nhịp độ nhanh khuyến khích sự tự chủ nhưng có thể dẫn đến việc vô tình bị cô lập xã hội.", category: "Đời sống xã hội & Con người" },
+            { id: 21, word: "nuclear family", answers: ["nuclear family", "nuclear families"], meaning: "Gia đình hạt nhân", ipa: "/ˈnjuːkliə ˈfæmɪli/", sentence: "The transition from extended households to the ___ has limited children's contact with grandparents.", fullSentence: "The transition from extended households to the nuclear family has limited children's contact with grandparents.", translation: "Sự chuyển đổi từ các hộ gia đình nhiều thế hệ sang gia đình hạt nhân đã hạn chế sự tiếp xúc của trẻ em với ông bà.", category: "Đời sống xã hội & Con người" },
+            { id: 22, word: "strike up a conversation", answers: ["strike up a conversation", "strike up a conversations", "striking up a conversation"], meaning: "Bắt chuyện, bắt đầu cuộc đối thoại", ipa: "/straɪk ʌp ə ˌkɒnvəˈseɪʃən/", sentence: "In large busy cities, people rarely make eye contact or try to ___ with strangers on public transport.", fullSentence: "In large busy cities, people rarely make eye contact or try to strike up a conversation with strangers on public transport.", translation: "Tập bản xứ chỉ ra trong những thành phố lớn bận rộn, mọi người hiếm khi giao tiếp bằng mắt hoặc cố gắng bắt chuyện với người lạ trên phương tiện giao thông công cộng.", category: "Đời sống xã hội & Con người" },
+            { id: 23, word: "urban design", answers: ["urban design", "urban designs"], meaning: "Thiết kế đô thị, quy hoạch đô thị", ipa: "/ˈɜːbən dɪˈzaɪn/", sentence: "Scholars emphasize that bad ___ is a major contributor to loneliness and neighborhood alienation.", fullSentence: "Scholars emphasize that bad urban design is a major contributor to loneliness and neighborhood alienation.", translation: "Các học giả nhấn mạnh rằng thiết kế đô thị tồi tệ là nguyên nhân lớn đóng góp vào nỗi cô đơn và sự xa lánh giữa những người hàng xóm.", category: "Đời sống xã hội & Con người" },
+            // 4. Từ vựng học thuật & Đánh giá
+            { id: 24, word: "clinical form", answers: ["clinical form", "clinical forms"], meaning: "Dạng lâm sàng", ipa: "/ˈklɪnɪkəl fɔːm/", sentence: "We must distinguish passing sadness from a severe ___ of chronic depression.", fullSentence: "We must distinguish passing sadness from a severe clinical form of chronic depression.", translation: "Chúng ta phải phân biệt nỗi buồn thoáng qua với một dạng lâm sàng nghiêm trọng của chứng trầm cảm kinh niên.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 25, word: "evolutionary theory", answers: ["evolutionary theory", "theory of evolution"], meaning: "Thuyết tiến hóa", ipa: "/ˌiːvəˈluːʃənəri ˈθɪəri/", sentence: "According to ___, loneliness functioned as a biological warning for early humans to return to the tribe.", fullSentence: "According to evolutionary theory, loneliness functioned as a biological warning for early humans to return to the tribe.", translation: "Theo thuyết tiến hóa, nỗi cô đơn đóng vai trò như một cảnh báo sinh học thúc giục con người tiền sử quay trở về với bộ tộc để sinh tồn.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 26, word: "eye-opener", answers: ["eye-opener", "eye opener"], meaning: "Điều làm sáng tỏ / điều mở rộng tầm mắt", ipa: "/ˈaɪ ˌəʊpənə/", sentence: "The discovery of a high mortality rate among isolated youths was a real ___ for the public.", fullSentence: "The discovery of a high mortality rate among isolated youths was a real eye-opener for the public.", translation: "Phát hiện về tỷ lệ tử vong cao ở thanh thiếu niên bị cô lập là một điều thực sự mở rộng tầm mắt đối với công chúng.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 27, word: "misleading", answers: ["misleading", "deceptive"], meaning: "Gây hiểu lầm, sai lệch", ipa: "/ˌmɪsˈliːdɪŋ/", sentence: "The claim that social networks solve loneliness is deeply ___ because online links are often shallow.", fullSentence: "The claim that social networks solve loneliness is deeply misleading because online links are often shallow.", translation: "Tuyên bố rằng mạng xã hội giải quyết được nỗi cô đơn là vô cùng gây hiểu lầm bởi vì các mối liên kết trực tuyến thường rất nông cạn.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 28, word: "move around", answers: ["move around", "moving around"], meaning: "Di chuyển liên tục, xê dịch", ipa: "/muːv əˈraʊnd/", sentence: "When young professionals must constantly ___ for work, they struggle to form durable local connections.", fullSentence: "When young professionals must constantly move around for work, they struggle to form durable local connections.", translation: "Khi những chuyên gia trẻ tuổi phải liên tục di chuyển vì công việc, họ rất khó có thể xây dựng các mối quan hệ lâu bền tại địa phương.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 29, word: "overstated", answers: ["overstated", "exaggerated"], meaning: "Bị phóng đại, cường điệu hóa", ipa: "/ˌəʊvəˈsteɪtɪd/", sentence: "The media's warning of a total societal collapse due to loneliness might be slightly ___.", fullSentence: "The media's warning of a total societal collapse due to loneliness might be slightly overstated.", translation: "Lời cảnh báo của truyền thông về một cuộc sụp đổ xã hội hoàn toàn do nỗi cô đơn có lẽ đã bị phóng đại quá mức một chút.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 30, word: "plausible", answers: ["plausible", "reasonable", "believable"], meaning: "Hợp lý, đáng tin cậy", ipa: "/ˈplɔːzəbl/", sentence: "It seems highly ___ that architectural adjustments in apartments could curb urban isolation.", fullSentence: "It seems highly plausible that architectural adjustments in apartments could curb urban isolation.", translation: "Có vẻ rất hợp lý khi những điều chỉnh kiến trúc trong các căn hộ có thể làm giảm bớt sự cô lập ở đô thị.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 31, word: "solid evidence", answers: ["solid evidence", "strong evidence", "conclusive evidence"], meaning: "Bằng chứng chắc chắn, bằng chứng thép", ipa: "/ˈsɒlɪd ˈɛvɪdns/", sentence: "Medical researchers now have ___ that chronic loneliness shortens human life expectancy.", fullSentence: "Medical researchers now have solid evidence that chronic loneliness shortens human life expectancy.", translation: "Các nhà nghiên cứu y học hiện đã có bằng chứng chắc chắn rằng sự cô đơn kinh niên làm giảm tuổi thọ của con người.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 32, word: "subjective", answers: ["subjective"], meaning: "Chủ quan", ipa: "/səbˈdʒɛktɪv/", sentence: "Loneliness is highly ___: a person can feel deeply isolated even when surrounded by colleagues.", fullSentence: "Loneliness is highly subjective: a person can feel deeply isolated even when surrounded by colleagues.", translation: "Nỗi cô đơn mang tính chủ quan cao: một người có thể cảm thấy bị cô lập sâu sắc ngay cả khi được bao quanh bởi các đồng nghiệp.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 33, word: "take seriously", answers: ["take seriously", "taken seriously"], meaning: "Xem trọng, coi trọng nghiêm túc", ipa: "/teɪk ˈsɪəriəsli/", sentence: "Governments must ___ the social impacts of architectural development on emotional health.", fullSentence: "Governments must take seriously the social impacts of architectural development on emotional health.", translation: "Chính phủ phải xem trọng nghiêm t xī các tác động xã hội của việc phát triển kiến trúc đối với sức khỏe cảm xúc.", category: "Từ vựng học thuật & Đánh giá" },
+            { id: 4, word: "widely accepted", answers: ["widely accepted", "commonly accepted"], meaning: "Được chấp nhận rộng rãi", ipa: "/ˈwaɪdli əkˈsɛptɪd/", sentence: "It is now ___ that psychological wellbeing is directly connected to our cardiovascular health.", fullSentence: "It is now widely accepted that psychological wellbeing is directly connected to our cardiovascular health.", translation: "Hiện nay việc sức khỏe tâm lý liên quan trực tiếp đến sức khỏe tim mạch của chúng ta là một điều được chấp nhận rộng rãi.", category: "Từ vựng học thuật & Đánh giá" }
+        ];
+
+        // Global App States
+        let selectedQuestions = [];
+        let activeIndex = 0;
+        let isChecked = false;
+        let userAnswers = {};
+        let score = 0;
+        let wrongList = [];
+        let dictationMode = false;
+        let isAudioPlaying = false;
+
+        function startSession(mode) {
+            dictationMode = (mode === 'dictation');
+            selectedQuestions = shuffleArray([...vocabularyData]);
+            activeIndex = 0;
+            score = 0;
+            wrongList = [];
+            isChecked = false;
+            userAnswers = {};
+
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            if (dictationMode) {
+                document.getElementById('dictation-badge').classList.remove('hidden');
+                document.getElementById('meaning-prompt-box').classList.add('hidden');
+            } else {
+                document.getElementById('dictation-badge').classList.add('hidden');
+                document.getElementById('meaning-prompt-box').classList.remove('hidden');
+            }
+
+            loadActiveCard();
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function loadActiveCard() {
+            const currentItem = selectedQuestions[activeIndex];
+            if (!currentItem) return;
+
+            isChecked = false;
+            isAudioPlaying = false;
+
+            // Reset UI components
+            document.getElementById('current-index').innerText = activeIndex + 1;
+            document.getElementById('total-questions').innerText = selectedQuestions.length;
+            document.getElementById('active-category').innerText = currentItem.category;
+            document.getElementById('active-meaning').innerText = currentItem.meaning;
+            document.getElementById('active-ipa').innerText = currentItem.ipa;
+            document.getElementById('active-translation').innerText = currentItem.translation;
+
+            document.getElementById('header-progress').innerText = activeIndex;
+            document.getElementById('header-total').innerText = selectedQuestions.length;
+            document.getElementById('active-sentence').innerText = currentItem.sentence;
+
+            // Progress bar value
+            const barPercent = (activeIndex / selectedQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${barPercent}%`;
+
+            // Reset inputs field
+            const answerInput = document.getElementById('answer-input');
+            answerInput.value = "";
+            answerInput.disabled = false;
+            answerInput.className = "flex-grow px-4 py-3.5 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl outline-none text-base font-extrabold text-indigo-900 transition-all placeholder:font-semibold placeholder:text-slate-300";
+            
+            document.getElementById('submit-btn').classList.remove('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('next-btn').disabled = true; // Lock Next button until Audio finishes
+            document.getElementById('audio-wait-msg').classList.add('hidden');
+
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.add('hidden');
+            feedbackBox.className = "hidden mt-6 p-4 rounded-2xl border transition-all duration-300 flex items-start gap-3";
+
+            // Focus
+            setTimeout(() => { answerInput.focus(); }, 150);
+
+            // Play the dynamic clue upon entry
+            speakText(currentItem.word);
+        }
+
+        function playActiveWord() {
+            const currentItem = selectedQuestions[activeIndex];
+            if (currentItem) speakText(currentItem.word);
+        }
+
+        function playActiveSentence() {
+            const currentItem = selectedQuestions[activeIndex];
+            if (currentItem) speakText(currentItem.fullSentence);
+        }
+
+        // Speech Engine with Callback support to unlock next question
+        function speakText(text, callback = null) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                if (callback) {
+                    utterance.onend = callback;
+                }
+                window.speechSynthesis.speak(utterance);
+            } else if (callback) {
+                callback(); // Fallback if Speech API fails
+            }
+        }
+
+        // Submit and immediately trigger Tẹt Tẹt/Ding Ding and Audio chain
+        function submitCheck() {
+            if (isChecked) return;
+
+            const currentItem = selectedQuestions[activeIndex];
+            if (!currentItem) return;
+
+            const userInput = document.getElementById('answer-input').value.trim().toLowerCase();
+            if (userInput === "") {
+                return;
+            }
+
+            userAnswers[currentItem.id] = userInput;
+            isChecked = true;
+
+            const isCorrect = currentItem.answers.some(ans => ans.toLowerCase().trim() === userInput);
+
+            const answerInput = document.getElementById('answer-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackDesc = document.getElementById('feedback-desc');
+            const feedbackAlternatives = document.getElementById('feedback-alternatives');
+            const audioWaitMsg = document.getElementById('audio-wait-msg');
+
+            answerInput.disabled = true;
+            submitBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+            nextBtn.disabled = true; // Stay locked until audio flow is completed
+            audioWaitMsg.classList.remove('hidden');
+
+            if (dictationMode) {
+                document.getElementById('meaning-prompt-box').classList.remove('hidden');
+                document.getElementById('active-meaning').innerText = currentItem.meaning;
+            }
+
+            feedbackBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                score++;
+                playSound('correct'); // Ding Ding!
+                answerInput.classList.add('correct-input');
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800', 'glow-correct');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+                feedbackTitle.innerText = "Chính xác!";
+                feedbackDesc.innerText = `Chúc mừng bạn đã gõ đúng từ vựng này.`;
+                
+                const otherSynonyms = currentItem.answers.filter(ans => ans.toLowerCase().trim() !== userInput);
+                if (otherSynonyms.length > 0) {
+                    feedbackAlternatives.classList.remove('hidden');
+                    feedbackAlternatives.innerHTML = `💡 Đồng nghĩa khác: <strong class="text-slate-700">${otherSynonyms.join(' / ')}</strong>`;
+                } else {
+                    feedbackAlternatives.classList.add('hidden');
+                }
+            } else {
+                wrongList.push(currentItem);
+                playSound('incorrect'); // Tẹt Tẹt!
+                answerInput.classList.add('incorrect-input');
+                feedbackBox.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800', 'glow-incorrect');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+                feedbackTitle.innerText = "Sai rồi (Tẹt Tẹt)!";
+                feedbackDesc.innerHTML = `Đáp án chính xác là: <strong class="text-rose-700 underline text-base capitalize">${currentItem.word}</strong>`;
+                feedbackAlternatives.classList.add('hidden');
+            }
+
+            // Reveal correct answer on sentence gap display instantly
+            document.getElementById('active-sentence').innerHTML = currentItem.fullSentence.replace(
+                new RegExp(`\\b${currentItem.word}\\b`, 'gi'), 
+                `<span class="text-indigo-600 border-b-2 border-indigo-500 font-extrabold px-1">${currentItem.word}</span>`
+            );
+
+            // Execute automated sequential audio chain
+            isAudioPlaying = true;
+            window.speechSynthesis.cancel(); // Flush previous speech actions
+
+            // Chain 1: Read the target word
+            speakText(currentItem.word, () => {
+                // Chain 2: Wait 400ms then read the complete example sentence
+                setTimeout(() => {
+                    speakText(currentItem.fullSentence, () => {
+                        // Chain 3: Audio finished completely -> Unlock Next button
+                        isAudioPlaying = false;
+                        nextBtn.disabled = false;
+                        audioWaitMsg.classList.add('hidden');
+                        nextBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-md transform scale-105 duration-250 animate-bounce";
+                        nextBtn.focus();
+                    });
+                }, 400);
+            });
+        }
+
+        function nextCard() {
+            if (isAudioPlaying) return; // Guard logic to prevent bypassing audio requirements
+            activeIndex++;
+            if (activeIndex >= selectedQuestions.length) {
+                showResultsPanel();
+            } else {
+                if (dictationMode) {
+                    document.getElementById('meaning-prompt-box').classList.add('hidden');
+                }
+                loadActiveCard();
+            }
+        }
+
+        function showResultsPanel() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const total = selectedQuestions.length;
+            const accuracy = Math.round((score / total) * 100);
+
+            document.getElementById('stat-correct').innerText = score;
+            document.getElementById('stat-wrong').innerText = wrongList.length;
+            document.getElementById('stat-accuracy').innerText = `${accuracy}%`;
+
+            const retryBtnReal = document.getElementById('retry-mistakes-btn');
+            if (wrongList.length > 0) {
+                retryBtnReal.classList.remove('hidden');
+            } else {
+                retryBtnReal.classList.add('hidden');
+            }
+
+            document.getElementById('header-progress').innerText = total;
+        }
+
+        function reviewWrongCardsOnly() {
+            if (wrongList.length === 0) return;
+
+            selectedQuestions = shuffleArray([...wrongList]);
+            activeIndex = 0;
+            score = 0;
+            wrongList = [];
+            isChecked = false;
+            userAnswers = {};
+
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            if (dictationMode) {
+                document.getElementById('meaning-prompt-box').classList.add('hidden');
+            } else {
+                document.getElementById('meaning-prompt-box').classList.remove('hidden');
+            }
+
+            loadActiveCard();
+        }
+
+        function restartAllSession() {
+            startSession(dictationMode ? 'dictation' : 'standard');
+        }
+
+        function exitToWelcome() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            document.getElementById('header-progress').innerText = "0";
+            document.getElementById('header-total').innerText = "34";
+        }
+
+        // Global Enter-key shortcut listener for frictionless testing
+        document.getElementById('answer-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (!isChecked) {
+                    submitCheck();
+                } else if (!document.getElementById('next-btn').disabled) {
+                    nextCard();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```eof
+
+Bạn hãy bấm nút **Preview** để kích hoạt ứng dụng và trải nghiệm ngay quy trình học siêu tốc "Gõ sai báo tẹt tẹt - Tự động đọc chuỗi âm thanh" này nhé! Chúc bạn ôn tập thật tốt!
